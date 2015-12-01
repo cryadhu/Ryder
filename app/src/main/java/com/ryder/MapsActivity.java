@@ -131,7 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
        // mMap.setOnMyLocationChangeListener(this);
 
         locationManager = (LocationManager) context
