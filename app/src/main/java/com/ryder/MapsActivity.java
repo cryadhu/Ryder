@@ -1,6 +1,7 @@
 package com.ryder;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -64,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Bitmap marker;
 
     Button find;
-    Marker newMarker,currCarMakrer;
+    Marker newMarker,currCarMakrer,desMarker;
     MapsActivity context;
     public String TAG = "Result";
     protected GoogleApiClient mGoogleApiClient;
@@ -111,16 +113,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                // updateCurrLocation();
 
-               /* if (currLong==0)
+               if (currLong==0)
                     getLocation(LocationManager.GPS_PROVIDER);
                 else {
                     LatLng curLoc = curLoc = new LatLng(currLat, currLong);
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(curLoc));
-                }*/
-                String urlTopass = makeURL(currLat,
-                        currLong, desLat,
-                        desLong);
-                new connectAsyncTask(urlTopass).execute();
+                }
 
             }
         });
@@ -169,6 +167,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Log.i(TAG, "Autocomplete item selected: " + primaryText);
 
+
             /*
              Issue a request to the Places Geo Data API to retrieve a Place object with additional
              details about the place.
@@ -206,7 +205,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(place.getName().toString()));
             final CharSequence thirdPartyAttribution = places.getAttributions();
 
+
             places.release();
+
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mAutocompleteView.getWindowToken(), 0);
+
+            String urlTopass = makeURL(currLat,
+                    currLong, desLat,
+                    desLong);
+            new connectAsyncTask(urlTopass).execute();
+
         }
     };
 
@@ -398,7 +407,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        mMap.addMarker(new MarkerOptions()
+        if(desMarker!=null){
+            desMarker.remove();
+        }
+        desMarker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(desLat, desLong))
                 );
 
